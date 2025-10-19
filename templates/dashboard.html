@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="card map">{{ world_map }}</div>
+
+  <div class="card">
+    <h2>{{ player.username }} — уровень {{ player.level }}</h2>
+    <p>Энергия: {{ player.energy }} / 120 · Золото: {{ player.gold }} · Репутация: {{ player.reputation }}</p>
+    <table>
+      <thead>
+        <tr><th>Характеристика</th><th>Базово</th><th>С экипировкой</th></tr>
+      </thead>
+      <tbody>
+        {% set base = player.stats.as_dict() %}
+        {% set total = player.total_stats().as_dict() %}
+        {% for name, base_value in base.items() %}
+          <tr>
+            <td>{{ name }}</td>
+            <td>{{ base_value }}</td>
+            <td>{{ total[name] }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Экипировка</h3>
+    {% if player.equipment %}
+      <ul>
+        {% for slot, item in player.equipment.items() %}
+          <li><strong>{{ slot }}</strong>: {{ item.name }} ({{ item.rarity }}, сила {{ item.power }})</li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>Пока ничего не экипировано.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h3>Инвентарь</h3>
+    {% if player.inventory %}
+      <ul>
+        {% for item in player.inventory %}
+          <li>
+            {{ item.name }} — слот {{ item.slot }}, сила {{ item.power }}
+            <form method="post" action="{{ url_for('equip') }}">
+              <input type="hidden" name="index" value="{{ loop.index0 }}" />
+              <input type="submit" value="Экипировать" />
+            </form>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>Инвентарь пуст — отправляйтесь в экспедицию!</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h3>Чат клана</h3>
+    <ul class="chat">
+      {% for message in chat_log %}
+        <li><strong>{{ message.username }}</strong>: {{ message.text }}</li>
+      {% else %}
+        <li>Пока нет сообщений.</li>
+      {% endfor %}
+    </ul>
+    <form method="post" action="{{ url_for('chat') }}">
+      <input type="text" name="message" placeholder="Передать привет клану" required />
+      <input type="submit" value="Отправить" />
+    </form>
+  </div>
+
+  <div class="card">
+    <h3>Арена</h3>
+    <p>Соперник: {{ arena_opponent.name }} · Мощь: {{ arena_opponent.power }} · Энергия: 12</p>
+    <form method="post" action="{{ url_for('arena') }}">
+      <input type="submit" value="Вызвать на бой" />
+    </form>
+  </div>
+
+  <div class="card">
+    <h3>Экспедиции</h3>
+    <ul>
+      {% for key, zone in expeditions.items() %}
+        <li>
+          <strong>{{ zone.title }}</strong>: сложность {{ zone.difficulty }}, энергия {{ zone.energy }}, награда {{ zone.gold }} золота / {{ zone.xp }} опыта.
+          <form method="post" action="{{ url_for('expedition', zone=key) }}">
+            <input type="submit" value="Отправиться" />
+          </form>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Боссы</h3>
+    <ul>
+      {% for key, boss in bosses.items() %}
+        <li>
+          <strong>{{ boss.title }}</strong>: требуемая мощь {{ boss.threshold }}, энергия {{ boss.energy }}. Трофей — {{ boss.reward.name }}.
+          <form method="post" action="{{ url_for('boss', boss_key=key) }}">
+            <input type="submit" value="Сразиться" />
+          </form>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endblock %}

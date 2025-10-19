@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <title>Barbarian Saga — WAP MMORPG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body {
+        margin: 0 auto;
+        max-width: 480px;
+        font-family: "Trebuchet MS", Arial, sans-serif;
+        background: #0b1017;
+        color: #f1f5f9;
+      }
+      header, footer {
+        background: #111a27;
+        padding: 12px 16px;
+        border-bottom: 1px solid #1e293b;
+      }
+      footer {
+        border-top: 1px solid #1e293b;
+        border-bottom: none;
+        font-size: 12px;
+        text-align: center;
+      }
+      h1, h2, h3 {
+        margin: 0 0 8px 0;
+        font-weight: 600;
+      }
+      .map {
+        background: #020617;
+        padding: 12px;
+        border: 1px solid #1f2937;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        font-family: "Courier New", monospace;
+        white-space: pre-wrap;
+      }
+      .card {
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px solid #1f2937;
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin-bottom: 16px;
+      }
+      nav a {
+        color: #38bdf8;
+        text-decoration: none;
+        margin-right: 12px;
+        font-size: 14px;
+      }
+      nav form {
+        display: inline;
+      }
+      button, input[type="submit"] {
+        background: #2563eb;
+        border: none;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 14px;
+        cursor: pointer;
+        margin-top: 4px;
+      }
+      input[type="text"], input[type="password"] {
+        width: 100%;
+        padding: 8px;
+        margin: 4px 0 8px 0;
+        border-radius: 6px;
+        border: 1px solid #334155;
+        background: #0f172a;
+        color: #f1f5f9;
+      }
+      ul.chat {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      ul.chat li {
+        padding: 6px 0;
+        border-bottom: 1px dashed #1e293b;
+        font-size: 14px;
+      }
+      .flash {
+        background: #334155;
+        border-radius: 6px;
+        padding: 8px 12px;
+        margin-bottom: 12px;
+        font-size: 14px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th, td {
+        border: 1px solid #1f2937;
+        padding: 6px;
+        text-align: left;
+      }
+      th {
+        background: #1e293b;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Barbarian Saga</h1>
+      <nav>
+        {% if active_player %}
+          <a href="{{ url_for('dashboard') }}">Панель героя</a>
+          {% if active_player.role == 'admin' %}
+            <a href="{{ url_for('admin_panel') }}">Клан</a>
+          {% endif %}
+          <form method="post" action="{{ url_for('logout') }}" style="display:inline">
+            <input type="submit" value="Выход" />
+          </form>
+        {% else %}
+          <a href="{{ url_for('index') }}">Домой</a>
+        {% endif %}
+      </nav>
+    </header>
+    <main style="padding: 16px;">
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          {% for message in messages %}
+            <div class="flash">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </main>
+    <footer>
+      © Barbarian Saga WAP Edition — мир клана открыт для браузера
+    </footer>
+  </body>
+</html>

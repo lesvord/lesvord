@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="card">
+    <h2>Совет клана</h2>
+    <p>Всего героев: {{ players|length }}</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Герой</th>
+          <th>Уровень</th>
+          <th>Роль</th>
+          <th>Энергия</th>
+          <th>Золото</th>
+          <th>Репутация</th>
+          <th>Экипировка</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for hero in players %}
+          <tr>
+            <td>{{ hero.username }}</td>
+            <td>{{ hero.level }}</td>
+            <td>{{ hero.role }}</td>
+            <td>{{ hero.energy }}</td>
+            <td>{{ hero.gold }}</td>
+            <td>{{ hero.reputation }}</td>
+            <td>
+              {% if hero.equipment %}
+                {% for eq in hero.equipment %}
+                  {{ eq.slot }}: {{ eq.item.name }} ({{ eq.item.rarity }})<br />
+                {% endfor %}
+              {% else %}
+                —
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="card map">
+    {{ world_map }}
+  </div>
+  <div class="card">
+    <h2>Вход</h2>
+    <form method="post" action="{{ url_for('login') }}">
+      <label for="login-username">Имя героя</label>
+      <input id="login-username" name="username" type="text" required />
+      <label for="login-password">Пароль</label>
+      <input id="login-password" name="password" type="password" required />
+      <input type="submit" value="Войти" />
+    </form>
+  </div>
+  <div class="card">
+    <h2>Регистрация</h2>
+    <form method="post" action="{{ url_for('register') }}">
+      <label for="register-username">Имя героя</label>
+      <input id="register-username" name="username" type="text" required />
+      <label for="register-password">Пароль</label>
+      <input id="register-password" name="password" type="password" required />
+      <input type="submit" value="Создать героя" />
+    </form>
+    <p style="font-size: 12px; margin-top: 8px; color: #cbd5f5;">
+      Первый запуск создаёт аккаунт <strong>admin/admin</strong> для управления кланом.
+    </p>
+  </div>
+{% endblock %}
