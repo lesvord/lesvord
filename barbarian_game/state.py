@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from random import random
+from random import randint, random
 from typing import List, Sequence
 
 from .entities import Barbarian, EnemyCamp, ResourceCache, Village
@@ -27,6 +27,29 @@ class GameState:
     camps: List[EnemyCamp] = field(default_factory=list)
     caches: List[ResourceCache] = field(default_factory=list)
     message: str = "Начни путешествие!"
+
+    @classmethod
+    def default(cls, barbarian: Barbarian | None = None) -> "GameState":
+        """Build a populated game state with preset objectives."""
+
+        if barbarian is None:
+            barbarian = Barbarian(position=(120.0, 160.0), destination=(320.0, 240.0))
+        villages = [
+            Village("Долина", (90.0, 360.0), prosperity=25),
+            Village("Ветряное", (420.0, 120.0), prosperity=30),
+        ]
+        camps = [
+            EnemyCamp("Лагерь клана", (320.0, 420.0), strength=3, loot=25),
+            EnemyCamp(
+                "Темный форпост", (520.0, 260.0), strength=5, loot=45, enrages_on_attack=True
+            ),
+            EnemyCamp("Арена вожака", (140.0, 120.0), strength=7, loot=60),
+        ]
+        caches = [
+            ResourceCache((randint(140, 480), randint(140, 380)), amount=35.0),
+            ResourceCache((randint(80, 520), randint(80, 440)), amount=25.0),
+        ]
+        return cls(barbarian=barbarian, villages=villages, camps=camps, caches=caches)
 
     def reset_destination(self, position: Sequence[float]) -> None:
         self.barbarian.destination = (float(position[0]), float(position[1]))

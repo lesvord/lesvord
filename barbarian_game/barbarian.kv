@@ -1,6 +1,366 @@
 #:kivy 2.2.1
 
-<GameScreen>:
+<RootManager>:
+    LandingScreen:
+    RegisterScreen:
+    LoginScreen:
+    HubScreen:
+    CharacterScreen:
+    ChatScreen:
+    ArenaScreen:
+    ExpeditionScreen:
+    BossScreen:
+    AdminScreen:
+    WorldScreen:
+
+<LandingScreen>:
+    name: "landing"
+    BoxLayout:
+        orientation: "vertical"
+        padding: dp(32)
+        spacing: dp(18)
+        Label:
+            text: "[b]Barbarian Saga[/b]"
+            markup: True
+            font_size: "26sp"
+        Label:
+            text: "Создайте героя или войдите, чтобы исследовать все активности"
+            halign: "center"
+            valign: "middle"
+            text_size: self.size
+        Button:
+            text: "Регистрация"
+            size_hint_y: None
+            height: dp(48)
+            on_release: app.root.current = "register"
+        Button:
+            text: "Авторизация"
+            size_hint_y: None
+            height: dp(48)
+            on_release: app.root.current = "login"
+
+<RegisterScreen>:
+    name: "register"
+    BoxLayout:
+        orientation: "vertical"
+        padding: dp(24)
+        spacing: dp(14)
+        Label:
+            text: "Создание аккаунта"
+            font_size: "22sp"
+        TextInput:
+            id: reg_username
+            hint_text: "Имя героя"
+            multiline: False
+        TextInput:
+            id: reg_password
+            hint_text: "Пароль"
+            password: True
+            multiline: False
+        Spinner:
+            id: reg_role
+            text: "player"
+            values: "player", "admin"
+        Button:
+            text: "Зарегистрироваться"
+            size_hint_y: None
+            height: dp(48)
+            on_release: root.submit()
+        Label:
+            text: root.message
+            color: 1, 0.85, 0.5, 1
+            text_size: self.size
+            halign: "center"
+        Button:
+            text: "Назад"
+            size_hint_y: None
+            height: dp(42)
+            on_release: app.root.current = "landing"
+
+<LoginScreen>:
+    name: "login"
+    BoxLayout:
+        orientation: "vertical"
+        padding: dp(24)
+        spacing: dp(14)
+        Label:
+            text: "Авторизация"
+            font_size: "22sp"
+        TextInput:
+            id: login_username
+            hint_text: "Имя героя"
+            multiline: False
+        TextInput:
+            id: login_password
+            hint_text: "Пароль"
+            password: True
+            multiline: False
+        Button:
+            text: "Войти"
+            size_hint_y: None
+            height: dp(48)
+            on_release: root.submit()
+        Label:
+            text: root.message
+            color: 0.7, 1, 0.7, 1
+            text_size: self.size
+            halign: "center"
+        Button:
+            text: "Назад"
+            size_hint_y: None
+            height: dp(42)
+            on_release: app.root.current = "landing"
+
+<HubScreen>:
+    name: "hub"
+    BoxLayout:
+        orientation: "vertical"
+        padding: dp(22)
+        spacing: dp(10)
+        Label:
+            text: root.greeting
+            font_size: "24sp"
+        Label:
+            text: root.role_hint if root.role_hint else "Выберите активность"
+        GridLayout:
+            cols: 2
+            spacing: dp(8)
+            size_hint_y: None
+            height: self.minimum_height
+            Button:
+                text: "Параметры героя"
+                size_hint_y: None
+                height: dp(60)
+                on_release: app.root.current = "character"
+            Button:
+                text: "Чат"
+                size_hint_y: None
+                height: dp(60)
+                on_release: app.root.current = "chat"
+            Button:
+                text: "Арена"
+                size_hint_y: None
+                height: dp(60)
+                on_release: app.root.current = "arena"
+            Button:
+                text: "Экспедиции"
+                size_hint_y: None
+                height: dp(60)
+                on_release: app.root.current = "expeditions"
+            Button:
+                text: "Боссы"
+                size_hint_y: None
+                height: dp(60)
+                on_release: app.root.current = "bosses"
+            Button:
+                text: "Карта мира"
+                size_hint_y: None
+                height: dp(60)
+                on_release: app.root.current = "world"
+        Button:
+            text: "Админ-панель"
+            size_hint_y: None
+            height: dp(48)
+            disabled: not (app.session_manager.active_user and app.session_manager.active_user.is_admin)
+            on_release: app.root.current = "admin"
+        Button:
+            text: "Выход"
+            size_hint_y: None
+            height: dp(48)
+            on_release:
+                app.session_manager.logout()
+                app.root.current = "landing"
+
+<CharacterScreen>:
+    name: "character"
+    BoxLayout:
+        orientation: "vertical"
+        padding: dp(24)
+        spacing: dp(10)
+        Label:
+            text: "Параметры персонажа"
+            font_size: "22sp"
+        Label:
+            text: root.stats
+            text_size: self.size
+            valign: "top"
+        Button:
+            text: "Назад"
+            size_hint_y: None
+            height: dp(48)
+            on_release: app.root.current = "hub"
+
+<ChatScreen>:
+    name: "chat"
+    BoxLayout:
+        orientation: "vertical"
+        padding: dp(16)
+        spacing: dp(10)
+        Label:
+            text: "Таверна клана"
+            font_size: "22sp"
+        ScrollView:
+            size_hint_y: 0.7
+            do_scroll_x: False
+            do_scroll_y: True
+            bar_width: dp(6)
+            Label:
+                id: chat_log
+                text: root.chat_text
+                text_size: self.width, None
+                size_hint_y: None
+                height: self.texture_size[1]
+        TextInput:
+            id: chat_input
+            hint_text: "Написать сообщение"
+            multiline: False
+            on_text_validate: root.send_message()
+        Button:
+            text: "Отправить"
+            size_hint_y: None
+            height: dp(48)
+            on_release: root.send_message()
+        Button:
+            text: "Назад"
+            size_hint_y: None
+            height: dp(48)
+            on_release: app.root.current = "hub"
+
+<ArenaScreen>:
+    name: "arena"
+    BoxLayout:
+        orientation: "vertical"
+        padding: dp(24)
+        spacing: dp(12)
+        Label:
+            text: "Арена"
+            font_size: "22sp"
+        Label:
+            text: root.result
+            text_size: self.size
+            halign: "center"
+        Button:
+            text: "Начать бой"
+            size_hint_y: None
+            height: dp(52)
+            on_release: root.fight()
+        Button:
+            text: "Назад"
+            size_hint_y: None
+            height: dp(48)
+            on_release: app.root.current = "hub"
+
+<ExpeditionScreen>:
+    name: "expeditions"
+    BoxLayout:
+        orientation: "vertical"
+        padding: dp(20)
+        spacing: dp(10)
+        Label:
+            text: "Экспедиции"
+            font_size: "22sp"
+        Spinner:
+            id: expedition_spinner
+            text: "Выберите экспедицию"
+            values: []
+        Button:
+            text: "Отправить отряд"
+            size_hint_y: None
+            height: dp(48)
+            on_release: root.start_selected()
+        Label:
+            text: root.status_message
+            text_size: self.size
+            halign: "center"
+        ScrollView:
+            size_hint_y: 0.5
+            Label:
+                text: root.overview
+                text_size: self.width, None
+                size_hint_y: None
+                height: self.texture_size[1]
+        Button:
+            text: "Назад"
+            size_hint_y: None
+            height: dp(48)
+            on_release: app.root.current = "hub"
+
+<BossScreen>:
+    name: "bosses"
+    BoxLayout:
+        orientation: "vertical"
+        padding: dp(24)
+        spacing: dp(12)
+        Label:
+            text: "Боссы"
+            font_size: "22sp"
+        Spinner:
+            id: boss_spinner
+            text: "Выберите босса"
+            values: []
+        Button:
+            text: "Вызвать на бой"
+            size_hint_y: None
+            height: dp(48)
+            on_release: root.challenge()
+        Label:
+            text: root.status
+            text_size: self.size
+            halign: "center"
+        ScrollView:
+            size_hint_y: 0.5
+            Label:
+                text: root.bosses_overview
+                text_size: self.width, None
+                size_hint_y: None
+                height: self.texture_size[1]
+        Button:
+            text: "Назад"
+            size_hint_y: None
+            height: dp(48)
+            on_release: app.root.current = "hub"
+
+<AdminScreen>:
+    name: "admin"
+    BoxLayout:
+        orientation: "vertical"
+        padding: dp(20)
+        spacing: dp(12)
+        Label:
+            text: "Админ-панель"
+            font_size: "22sp"
+        ScrollView:
+            Label:
+                text: root.summary
+                text_size: self.width, None
+                size_hint_y: None
+                height: self.texture_size[1]
+        Button:
+            text: "Назад"
+            size_hint_y: None
+            height: dp(48)
+            on_release: app.root.current = "hub"
+
+<WorldScreen>:
+    name: "world"
+    BoxLayout:
+        orientation: "vertical"
+        padding: dp(8)
+        spacing: dp(8)
+        BoxLayout:
+            size_hint_y: None
+            height: dp(48)
+            Button:
+                text: "Назад"
+                size_hint_x: None
+                width: dp(120)
+                on_release: app.root.current = "hub"
+            Label:
+                text: "Карта сражений"
+        WorldBoard:
+            id: world_board
+
+<WorldBoard>:
     canvas.before:
         Color:
             rgba: 0.08, 0.09, 0.11, 1
@@ -10,7 +370,7 @@
     BarbarianSprite:
         id: hero
         size: dp(42), dp(42)
-        pos: root.game_state.barbarian.position
+        pos: (120, 160)
     BoxLayout:
         size_hint_y: None
         height: dp(72)
@@ -26,18 +386,19 @@
         ProgressBar:
             id: stamina_bar
             max: 100
-            value: root.game_state.barbarian.stamina
+            value: 100
         ProgressBar:
             id: rage_bar
             max: 100
-            value: root.game_state.barbarian.rage
+            value: 0
         Label:
-            text: f"Уровень {root.game_state.barbarian.level}"
+            id: level_label
+            text: "Уровень"
             size_hint_x: None
             width: dp(90)
     Label:
         id: message
-        text: root.game_state.message
+        text: "Коснитесь карты, чтобы идти"
         size_hint_y: None
         height: dp(40)
         pos_hint: {"x": 0.05, "y": 0.01}
@@ -58,7 +419,6 @@
 
 <ObjectiveMarker@Widget>:
     color: 0.5, 0.7, 1, 1
-    text: "?"
     canvas:
         Color:
             rgba: self.color
